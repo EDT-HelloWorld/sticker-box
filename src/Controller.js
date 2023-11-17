@@ -18,6 +18,7 @@ export class Controller {
     this.#view.bindCreateItem(this.handleCreateItem.bind(this));
     this.#view.bindRemoveSticker(this.handleRemoveSticker.bind(this));
     this.#view.bindRemoveItem(this.handleRemoveItem.bind(this));
+    this.#view.bindDragItem(this.handleDragItem.bind(this));
   }
 
   handleCreateSticker(title) {
@@ -66,6 +67,23 @@ export class Controller {
 
     sticker.removeItem(item);
     this.#view.renderRemoveItem(item);
+  }
+
+  handleMoveItemToOtherSticker(key, itemKey, targetKey) {
+    const sticker = this.#stickerStore.getStickers()[key];
+    const targetSticker = this.#stickerStore.getStickers()[targetKey];
+    const item = sticker.getItems().find((item) => item.getKey() === itemKey);
+
+    sticker.removeItem(item);
+    targetSticker.addItem(item);
+    this.#view.renderMoveItem(item, targetSticker);
+  }
+
+  handleDragItem(targetKey, itemKey, position) {
+    console.log(targetKey, itemKey, position);
+    const item = this.#stickerStore.getStickers()[targetKey];
+    // item.remove();
+    // this.#view.renderItemPosition(item);
   }
 
   // handleRenderItems(sticker) {

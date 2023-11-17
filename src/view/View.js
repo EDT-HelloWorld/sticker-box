@@ -133,4 +133,64 @@ export class View {
   renderRemoveItem(item) {
     item.remove();
   }
+
+  bindDragItem(handler) {
+    let isDraggingItem = false;
+    let parentStickerKey = null;
+    let $draggedItem = null;
+    let offset = {};
+
+    const onMouseMove = (event) => {
+      event.stopPropagation();
+      if (!isDraggingItem || !$draggedItem) return;
+
+      const newPosition = {
+        x: event.clientX - offset.x,
+        y: event.clientY - offset.y,
+      };
+
+      $draggedItem.style.left = `${newPosition.x}px`;
+      $draggedItem.style.top = `${newPosition.y}px`;
+    };
+
+    const onMouseUp = () => {
+      if (isDraggingItem && $draggedItem) {
+        const newPosition = {
+          x: parseFloat($draggedItem.style.left),
+          y: parseFloat($draggedItem.style.top),
+        };
+
+        handler(parentStickerKey, $draggedItem.dataset.key, newPosition);
+      }
+
+      isDraggingItem = false;
+      $draggedItem = null;
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+      if (!event.target.classList.contains('item')) return;
+      console.log(event);
+
+      isDraggingItem = true;
+      $draggedItem = event.target;
+      parentStickerKey = $draggedItem.closest('.sticker').id;
+
+      // Calculate the offset of the mouse pointer relative to the item's position
+      const rect = $draggedItem.getBoundingClientRect();
+      offset = {
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+      };
+
+      // Append the dragged item to the body so that it is not affected by the sticker's position
+      document.body.appendChild($draggedItem);
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  }
 }
