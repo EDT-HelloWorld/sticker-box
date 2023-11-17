@@ -173,7 +173,6 @@ export class View {
     document.addEventListener('mousedown', (event) => {
       event.stopPropagation();
       if (!event.target.classList.contains('item')) return;
-      console.log(event);
 
       isDraggingItem = true;
       $draggedItem = event.target;
