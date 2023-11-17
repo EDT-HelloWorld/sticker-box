@@ -1,19 +1,25 @@
 export class StickerStore {
   #stickers;
+  #totalCount;
 
   constructor() {
-    this.#stickers = [];
+    this.#stickers = new Object();
+    this.#totalCount = 0;
   }
 
   getStickers() {
     return this.#stickers;
   }
 
+  getNextKey() {
+    return this.#totalCount++;
+  }
+
   addSticker(sticker) {
-    this.#stickers.push(sticker);
+    this.#stickers[sticker.getKey()] = sticker;
   }
 
   removeSticker(sticker) {
-    this.#stickers = this.#stickers.filter((s) => s !== sticker);
+    delete this.#stickers[sticker.getKey()];
   }
 }
