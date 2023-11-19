@@ -106,8 +106,4 @@ export class Sticker {
       this.#items.splice(targetItemIndex, 1);
     }
   }
-
-  addItem(item) {
-    this.#items.push(item);
-  }
 }

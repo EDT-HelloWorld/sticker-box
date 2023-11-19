@@ -1,5 +1,3 @@
-import { getZIndexForItem, getZIndexForSticker } from '../utils/windowUtils.js';
-
 export class Item {
   #title;
   #key;
@@ -54,7 +52,6 @@ export class Item {
   }
 
   handleMouseDown(e) {
-    this.getSticker().getElement().style.zIndex = getZIndexForSticker();
     e.stopPropagation();
 
     this.#createPlaceHolderItemElement();

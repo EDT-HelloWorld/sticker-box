@@ -46,6 +46,8 @@ export class View {
       $currentSticker = event.target.closest('.sticker');
       if (!$currentSticker) return;
 
+      this.#$canvasSticker.appendChild($currentSticker);
+
       isDragging = true;
       startPosition = {
         x: event.clientX - $currentSticker.offsetLeft,
