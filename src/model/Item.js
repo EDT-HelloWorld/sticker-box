@@ -26,6 +26,26 @@ export class Item {
     this.#init();
   }
 
+  getSticker() {
+    return this.#sticker;
+  }
+
+  getElement() {
+    return this.#$element;
+  }
+
+  getKey() {
+    return this.#key;
+  }
+
+  getTitle() {
+    return this.#title;
+  }
+
+  removeElement() {
+    this.#$element.remove();
+  }
+
   #init() {
     this.#$element = this.#createElement();
   }
@@ -34,7 +54,7 @@ export class Item {
     const $item = document.createElement('li');
     $item.classList.add('item');
     $item.dataset.key = this.getKey();
-    $item.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    $item.addEventListener('mousedown', this.#handleMouseDown.bind(this));
 
     // 타이틀 영역
     const $itemTitle = document.createElement('div');
@@ -55,7 +75,7 @@ export class Item {
     return $item;
   }
 
-  handleMouseDown(event) {
+  #handleMouseDown(event) {
     event.target.closest('.stickers').append(event.target.closest('.sticker'));
     if (event.target.classList.contains('button-remove-item')) return;
 
@@ -75,38 +95,38 @@ export class Item {
     this.#renderPlaceHolderItemElement();
     this.#renderCloneItemElement();
 
-    document.addEventListener('mousemove', this.handleMouseMove);
-    document.addEventListener('mouseup', this.handleMouseUp);
+    const handleMouseMove = (event) => {
+      this.#position.x = event.pageX - this.#position.shiftX;
+      this.#position.y = event.pageY - this.#position.shiftY;
+
+      this.#switchPlaceHolderPosition(event.clientX, event.clientY);
+      this.#switchPosition(this.#position.x, this.#position.y);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+
+      this.#$element.style.display = 'flex';
+
+      let $originSticker = this.#getStickerElementByItemElement(this.#$cloneItem);
+      let $targetSticker = this.#getStickerElementByItemElement(this.#$placeHolderItem);
+
+      if ($originSticker.id != $targetSticker.id) {
+        let originSticker = stickerStore.findStickerByKey($originSticker.id);
+        let targetSticker = stickerStore.findStickerByKey($targetSticker.id);
+        this.#setSticker(targetSticker);
+        originSticker.removeItem(this);
+        targetSticker.addItem(this);
+      }
+
+      if (this.#$placeHolderItem != null) this.#removePlaceHolderItemElement();
+      if (this.#$cloneItem != null) this.#removeCloneItemElement();
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
   }
-
-  handleMouseMove = (event) => {
-    this.#position.x = event.pageX - this.#position.shiftX;
-    this.#position.y = event.pageY - this.#position.shiftY;
-
-    this.#switchPlaceHolderPosition(event.clientX, event.clientY);
-    this.#switchPosition(this.#position.x, this.#position.y);
-  };
-
-  handleMouseUp = () => {
-    document.removeEventListener('mousemove', this.handleMouseMove);
-    document.removeEventListener('mouseup', this.handleMouseUp);
-
-    this.#$element.style.display = 'flex';
-
-    let $originSticker = this.#getStickerElementByItemElement(this.#$cloneItem);
-    let $targetSticker = this.#getStickerElementByItemElement(this.#$placeHolderItem);
-
-    if ($originSticker.id != $targetSticker.id) {
-      let originSticker = stickerStore.findStickerByKey($originSticker.id);
-      let targetSticker = stickerStore.findStickerByKey($targetSticker.id);
-      this.#setSticker(targetSticker);
-      originSticker.removeItem(this);
-      targetSticker.addItem(this);
-    }
-
-    if (this.#$placeHolderItem != null) this.#removePlaceHolderItemElement();
-    if (this.#$cloneItem != null) this.#removeCloneItemElement();
-  };
 
   #getStickerElementByItemElement($item) {
     return $item.closest('.sticker');
@@ -192,27 +212,7 @@ export class Item {
     this.#$element.style.visibility = 'visible';
   }
 
-  getSticker() {
-    return this.#sticker;
-  }
-
   #setSticker(sticker) {
     this.#sticker = sticker;
-  }
-
-  getElement() {
-    return this.#$element;
-  }
-
-  getKey() {
-    return this.#key;
-  }
-
-  getTitle() {
-    return this.#title;
-  }
-
-  removeElement() {
-    this.#$element.remove();
   }
 }
