@@ -1,3 +1,5 @@
+import { getRandomColor } from '../utils/getRandomColor.js';
+
 export class Sticker {
   #title;
   #key;
@@ -5,6 +7,8 @@ export class Sticker {
   #curIndex;
   #position;
   #element;
+  #itemsElement;
+  #backgroundColor;
 
   constructor(title, key, position) {
     this.#title = title;
@@ -12,7 +16,9 @@ export class Sticker {
     this.#position = position;
     this.#curIndex = 0;
     this.#items = [];
+    this.#backgroundColor = getRandomColor();
     this.#element = this.#createElement();
+    this.#itemsElement = this.#element.querySelector('.items-container');
   }
 
   #createElement() {
@@ -21,6 +27,7 @@ export class Sticker {
     $sticker.id = this.getKey();
     $sticker.style.left = `${this.#position.x}px`;
     $sticker.style.top = `${this.#position.y}px`;
+    $sticker.style.backgroundColor = this.#backgroundColor;
 
     const $stickerHeader = document.createElement('div');
     $stickerHeader.classList.add('sticker-header');
@@ -39,7 +46,7 @@ export class Sticker {
     $stickerHeader.append($buttonRemoveSticker);
 
     const $stickerItems = document.createElement('ul');
-    $stickerItems.classList.add('sticker-items');
+    $stickerItems.classList.add('items-container');
 
     $sticker.append($stickerHeader, $stickerItems);
     return $sticker;
@@ -47,6 +54,10 @@ export class Sticker {
 
   getElement() {
     return this.#element;
+  }
+
+  getItemsElement() {
+    return this.#itemsElement;
   }
 
   getTitle() {
@@ -83,6 +94,17 @@ export class Sticker {
 
   removeItem(item) {
     this.#items = this.#items.filter((element) => element !== item);
+  }
+
+  updateSticker(item) {
+    const targetItem = this.#items.find((element) => element.getKey() === item.getKey());
+    const targetItemIndex = this.#items.indexOf(targetItem);
+
+    if (targetItemIndex === -1) {
+      this.#items.push(item);
+    } else {
+      this.#items.splice(targetItemIndex, 1);
+    }
   }
 
   addItem(item) {
