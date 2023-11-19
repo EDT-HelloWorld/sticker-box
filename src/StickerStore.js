@@ -11,12 +11,11 @@ export class StickerStore {
    * @description 스티커 스토어 초기화
    */
   init() {
-    // 스티커 생성 버튼 이벤트 추가
-    this.#$buttonCreateSticker = document.querySelector('#button-create-sticker');
-    this.#$buttonCreateSticker.addEventListener('click', this.#handleCreateSticker.bind(this));
-
     this.#stickers = new Object();
     this.#totalCount = 1;
+
+    this.#$buttonCreateSticker = document.querySelector('#button-create-sticker');
+    this.#$buttonCreateSticker.addEventListener('click', this.#handleCreateSticker.bind(this));
 
     this.#renderStickers();
   }
