@@ -1,4 +1,5 @@
 import { stickerStore } from '../../index.js';
+import { Sticker } from './Sticker.js';
 
 export class Item {
   #title;
@@ -26,40 +27,100 @@ export class Item {
     this.#init();
   }
 
-  getSticker() {
-    return this.#sticker;
-  }
-
+  /**
+   * @description 항목의 엘리먼트를 반환해주는 메서드
+   */
   getElement() {
     return this.#$element;
   }
 
-  getKey() {
-    return this.#key;
-  }
-
-  getTitle() {
-    return this.#title;
-  }
-
-  removeElement() {
-    this.#$element.remove();
-  }
-
+  /**
+   * @description 항목 초기화
+   */
   #init() {
     this.#$element = this.#createElement();
   }
 
+  /**
+   * @description 항목이 어떤 스티커에 추가되어 있는지 반환해주는 메서드
+   */
+  #getSticker() {
+    return this.#sticker;
+  }
+
+  /**
+   * @description 항목이 속한 스티커를 설정해주는 메서드
+   * @param {Sticker} sticker
+   */
+  #setSticker(sticker) {
+    this.#sticker = sticker;
+  }
+
+  /**
+   * @description 항목의 key를 반환해주는 메서드
+   */
+  #getKey() {
+    return this.#key;
+  }
+
+  /**
+   * @description 항목의 타이틀을 반환해주는 메서드
+   */
+  #getTitle() {
+    return this.#title;
+  }
+
+  /**
+   * @description 항목의 위치를 반환해주는 메서드
+   */
+  #getPosition() {
+    return this.#position;
+  }
+
+  /**
+   * @description 항목의 위치를 설정해주는 메서드
+   * @param {position} position
+   */
+  #setPosition(position) {
+    this.#position = position;
+  }
+
+  #getCloneElement() {
+    return this.#$cloneItem;
+  }
+
+  #setCloneElement($cloneItem) {
+    this.#$cloneItem = $cloneItem;
+  }
+
+  #getPlaceHolderElement() {
+    return this.#$placeHolderItem;
+  }
+
+  #setPlaceHolderElement($placeHolderItem) {
+    this.#$placeHolderItem = $placeHolderItem;
+  }
+
+  /**
+   * @description 항목의 엘리먼트를 삭제해주는 메서드
+   */
+  #removeElement() {
+    this.getElement().remove();
+  }
+
+  /**
+   * @description 항목의 엘리먼트를 생성해주는 메서드
+   */
   #createElement() {
     const $item = document.createElement('li');
     $item.classList.add('item');
-    $item.dataset.key = this.getKey();
+    $item.dataset.key = this.#getKey();
     $item.addEventListener('mousedown', this.#handleMouseDown.bind(this));
 
     // 타이틀 영역
     const $itemTitle = document.createElement('div');
     $itemTitle.classList.add('item-title');
-    $itemTitle.textContent = this.getTitle();
+    $itemTitle.textContent = this.#getTitle();
     $item.append($itemTitle);
 
     // 삭제 버튼
@@ -67,14 +128,20 @@ export class Item {
     $buttonRemoveItem.classList.add('button-remove-item');
     $buttonRemoveItem.textContent = '삭제';
     $buttonRemoveItem.addEventListener('mouseup', () => {
-      this.getSticker().removeItem(this);
-      this.removeElement();
+      this.#getSticker().removeItem(this);
+      this.#removeElement();
     });
     $item.append($buttonRemoveItem);
 
     return $item;
   }
 
+  /**
+   * @description 항목 생성 버튼 이벤트 핸들러
+   * placeHolderItem : 항목 드래그시 나타나는 그림자 표현을 위한 아이템 (드래그 앤 드랍을 위한 임시 아이템)
+   * cloneItem : 항목 드래그시 나타나는 회전된 항목 (드래그 앤 드랍을 위한 임시 아이템)
+   * @param {event} event
+   */
   #handleMouseDown(event) {
     event.target.closest('.stickers').append(event.target.closest('.sticker'));
     if (event.target.classList.contains('button-remove-item')) return;
@@ -82,35 +149,43 @@ export class Item {
     this.#createPlaceHolderItemElement();
     this.#createCloneItemElement();
 
-    this.#$element.style.visibility = 'hidden';
+    this.getElement().style.visibility = 'hidden';
 
-    const shiftX = event.pageX - this.#$element.offsetLeft;
-    const shiftY = event.pageY - this.#$element.offsetTop;
+    const shiftX = event.pageX - this.getElement().offsetLeft;
+    const shiftY = event.pageY - this.getElement().offsetTop;
 
-    this.#position.shiftX = shiftX;
-    this.#position.shiftY = shiftY;
+    this.#setPosition({
+      ...this.#getPosition(),
+      shiftX,
+      shiftY,
+    });
 
-    this.#switchPosition(this.#$element.offsetLeft, this.#$element.offsetTop);
+    this.#switchPosition(this.getElement().offsetLeft, this.getElement().offsetTop);
 
     this.#renderPlaceHolderItemElement();
     this.#renderCloneItemElement();
 
+    // 마우스 이동 이벤트 핸들러
     const handleMouseMove = (event) => {
-      this.#position.x = event.pageX - this.#position.shiftX;
-      this.#position.y = event.pageY - this.#position.shiftY;
+      this.#setPosition({
+        ...this.#getPosition(),
+        x: event.pageX - this.#getPosition().shiftX,
+        y: event.pageY - this.#getPosition().shiftY,
+      });
 
       this.#switchPlaceHolderPosition(event.clientX, event.clientY);
-      this.#switchPosition(this.#position.x, this.#position.y);
+      this.#switchPosition(this.#getPosition().x, this.#getPosition().y);
     };
 
+    // 마우스 업 이벤트 핸들러
     const handleMouseUp = () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
 
-      this.#$element.style.display = 'flex';
+      this.getElement().style.display = 'flex';
 
-      let $originSticker = this.#getStickerElementByItemElement(this.#$cloneItem);
-      let $targetSticker = this.#getStickerElementByItemElement(this.#$placeHolderItem);
+      let $originSticker = this.#getStickerElementByItemElement(this.#getCloneElement());
+      let $targetSticker = this.#getStickerElementByItemElement(this.#getPlaceHolderElement());
 
       if ($originSticker.id != $targetSticker.id) {
         let originSticker = stickerStore.findStickerByKey($originSticker.id);
@@ -120,99 +195,139 @@ export class Item {
         targetSticker.addItem(this);
       }
 
-      if (this.#$placeHolderItem != null) this.#removePlaceHolderItemElement();
-      if (this.#$cloneItem != null) this.#removeCloneItemElement();
+      if (this.#getPlaceHolderElement() != null) this.#removePlaceHolderItemElement();
+      if (this.#getCloneElement() != null) this.#removeCloneItemElement();
     };
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   }
 
+  /**
+   * @description 항목이 속한 스티커의 엘리먼트를 반환해주는 메서드
+   * @param {element} $item
+   */
   #getStickerElementByItemElement($item) {
     return $item.closest('.sticker');
   }
 
+  /**
+   * @description CloneItem의 위치를 변경해주는 메서드
+   * @param {number} x
+   * @param {number} y
+   */
   #switchPosition(x, y) {
-    this.#$cloneItem.style.left = `${x}px`;
-    this.#$cloneItem.style.top = `${y}px`;
+    this.#getCloneElement().style.left = `${x}px`;
+    this.#getCloneElement().style.top = `${y}px`;
   }
 
+  /**
+   * @description PlaceHolderItem의 위치를 변경해주는 메서드
+   * 전체 엘리먼트를 가져와서 x, y 좌표에 해당하는 엘리먼트를 찾아서 그 엘리먼트를 기준으로 위치를 변경해준다.
+   *
+   * @param {number} x
+   * @param {number} y
+   */
   #switchPlaceHolderPosition(x, y) {
     let $item = null;
     let $itemsContainer = null;
     let elements = document.elementsFromPoint(x, y);
 
-    elements.forEach((element) => {
+    const isSwitchPlaceHolder = elements.some((element) => {
       if (element.classList.contains('item')) {
+        // 아이템에 위치하는 경우
         $item = element;
+        let $sticker = this.#getStickerElementByItemElement($item);
+
+        this.#$placeHolderItem.style.position = 'static';
+        this.getElement().style.display = 'none';
+
+        if (y - $item.offsetTop - $sticker.offsetTop < 50) {
+          $item.before(this.#$placeHolderItem);
+          $item.before(this.getElement());
+        } else {
+          $item.after(this.#$placeHolderItem);
+          $item.after(this.getElement());
+        }
+        return true;
       } else if (element.classList.contains('items-container')) {
+        // 아이템 컨테이너에 위치하는 경우
         $itemsContainer = element;
+        if (!this.#hasClassInChildren($itemsContainer, 'item')) {
+          $itemsContainer.appendChild(this.#$placeHolderItem);
+          $itemsContainer.appendChild(this.getElement());
+        }
+        return true;
       }
     });
 
-    if ($item != null) {
-      let $sticker = this.#getStickerElementByItemElement($item);
-
-      this.#$placeHolderItem.style.position = 'static';
-      this.#$element.style.display = 'none';
-
-      if (y - $item.offsetTop - $sticker.offsetTop < 50) {
-        $item.before(this.#$placeHolderItem);
-        $item.before(this.#$element);
-      } else {
-        $item.after(this.#$placeHolderItem);
-        $item.after(this.#$element);
-      }
-    } else if ($itemsContainer != null) {
-      if (!this.#hasClassInChildren($itemsContainer, 'item')) {
-        $itemsContainer.appendChild(this.#$placeHolderItem);
-        $itemsContainer.appendChild(this.#$element);
-      }
-    } else {
-      this.#$element.before(this.#$placeHolderItem);
+    if (!isSwitchPlaceHolder) {
+      // 옮길 수 없는 위치에 있을 경우
+      this.getElement().before(this.#$placeHolderItem);
     }
   }
 
+  /**
+   * @description 해당 엘리먼트의 자식 엘리먼트에 className이 있는지 확인하는 메서드
+   * @param {element} parentElement
+   * @param {string} className
+   */
   #hasClassInChildren(parentElement, className) {
     const matchingElement = parentElement.querySelector(`.${className}`);
 
     return !!matchingElement;
   }
 
+  /**
+   * @description placeHolderItem 엘리먼트를 생성해주는 메서드
+   */
   #createPlaceHolderItemElement() {
-    this.#$placeHolderItem = this.#$element.cloneNode();
-    this.#$placeHolderItem.classList.add('item-place-holder');
+    const $placeHolderItem = this.getElement().cloneNode();
+    $placeHolderItem.classList.add('item-place-holder');
+    this.#setPlaceHolderElement($placeHolderItem);
   }
 
+  /**
+   * @description cloneItem 엘리먼트를 생성해주는 메서드
+   */
   #createCloneItemElement() {
-    this.#$cloneItem = this.#$element.cloneNode(true);
-    this.#$cloneItem.classList.remove('item');
-    this.#$cloneItem.classList.add('item-clone');
+    const $cloneItem = this.getElement().cloneNode(true);
+    $cloneItem.classList.remove('item');
+    $cloneItem.classList.add('item-clone');
+    this.#setCloneElement($cloneItem);
   }
 
+  /**
+   * @description placeHolderItem 엘리먼트를 렌더링해주는 메서드
+   */
   #renderPlaceHolderItemElement() {
-    this.#$element.before(this.#$placeHolderItem);
+    this.getElement().before(this.#$placeHolderItem);
   }
 
+  /**
+   * @description cloneItem 엘리먼트를 렌더링해주는 메서드
+   */
   #renderCloneItemElement() {
     if (this.#$cloneItem == null) return;
-    const $items = this.getSticker().getItemsElement();
+    const $items = this.#getSticker().getItemsElement();
     $items.appendChild(this.#$cloneItem);
   }
 
+  /**
+   * @description placeHolderItem 엘리먼트를 삭제해주는 메서드
+   */
   #removePlaceHolderItemElement() {
-    this.#$placeHolderItem.remove();
-    this.#$placeHolderItem = null;
+    this.#getPlaceHolderElement().remove();
+    this.#setPlaceHolderElement(null);
   }
 
+  /**
+   * @description cloneItem 엘리먼트를 삭제해주는 메서드
+   */
   #removeCloneItemElement() {
-    this.#$cloneItem.remove();
-    this.#$cloneItem = null;
+    this.#getCloneElement().remove();
+    this.#setCloneElement(null);
 
-    this.#$element.style.visibility = 'visible';
-  }
-
-  #setSticker(sticker) {
-    this.#sticker = sticker;
+    this.getElement().style.visibility = 'visible';
   }
 }
