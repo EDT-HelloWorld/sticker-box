@@ -2,6 +2,7 @@ import { Sticker } from './model/Sticker.js';
 import { StickerStore } from './model/StickerStore.js';
 import { Item } from './model/Item.js';
 import { View } from './view/View.js';
+import { getPrimaryKey } from './utils/getPrimaryKey.js';
 
 export class Controller {
   #view;
@@ -17,12 +18,12 @@ export class Controller {
     this.#view.bindMoveSticker(this.handleMoveSticker.bind(this));
     this.#view.bindCreateItem(this.handleCreateItem.bind(this));
     this.#view.bindRemoveSticker(this.handleRemoveSticker.bind(this));
-    this.#view.bindRemoveItem(this.handleRemoveItem.bind(this));
   }
 
-  handleCreateSticker(title) {
+  handleCreateSticker() {
     const position = this.#stickerStore.getPositionForCreateSticker();
-    const key = `sticker-${this.#stickerStore.getNextKey()}`;
+    const key = `sticker-${getPrimaryKey()}`;
+    const title = `Sticker ${this.#stickerStore.getNextCount()}`;
     const sticker = new Sticker(title, key, position);
 
     this.#stickerStore.addSticker(sticker);
@@ -48,7 +49,7 @@ export class Controller {
     const sticker = this.#stickerStore.getStickers()[key];
     const item = new Item(
       sticker,
-      `item-${sticker.getNextIndex()}`,
+      `item-${getPrimaryKey()}`,
       title,
       this.#stickerStore.findStickerByKey.bind(this.#stickerStore),
     );
@@ -62,31 +63,4 @@ export class Controller {
       this.#view.renderStickerPosition(sticker);
     });
   }
-
-  handleRemoveItem(key, itemKey) {
-    const sticker = this.#stickerStore.getStickers()[key];
-    const item = sticker.getItems().find((item) => item.getKey() === itemKey);
-
-    console.log(item, itemKey);
-
-    sticker.removeItem(item);
-    this.#view.renderRemoveItem(item);
-  }
-
-  // handleMoveItemToOtherSticker(key, itemKey, targetKey) {
-  //   const sticker = this.#stickerStore.getStickers()[key];
-  //   const targetSticker = this.#stickerStore.getStickers()[targetKey];
-  //   const item = sticker.getItems().find((item) => item.getKey() === itemKey);
-
-  //   sticker.removeItem(item);
-  //   targetSticker.addItem(item);
-  //   this.#view.renderMoveItem(item, targetSticker);
-  // }
-
-  // handleDragItem(targetKey, itemKey, position) {
-  //   console.log(targetKey, itemKey, position);
-  //   const item = this.#stickerStore.getStickers()[targetKey];
-  //   // item.removeElement();
-  //   // this.#view.renderItemPosition(item);
-  // }
 }

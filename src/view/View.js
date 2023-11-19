@@ -43,6 +43,8 @@ export class View {
     document.addEventListener('mousedown', (event) => {
       if (event.target.classList.contains('button-remove-sticker')) return;
       if (event.target.classList.contains('button-item-add')) return;
+      if (event.target.classList.contains('item')) return;
+      if (event.target.classList.contains('button-remove-item')) return;
       $currentSticker = event.target.closest('.sticker');
       if (!$currentSticker) return;
 
@@ -102,19 +104,18 @@ export class View {
     });
   }
 
-  bindRemoveItem(handler) {
-    this.#$canvasSticker.addEventListener('click', (event) => {
-      const $buttonRemoveItem = event.target.closest('.button-remove-item');
-      if (!$buttonRemoveItem) return;
+  // bindRemoveItem(handler) {
+  //   this.#$canvasSticker.addEventListener('click', (event) => {
+  //     console.log(event.target);
+  //     const $buttonRemoveItem = event.target.closest('.button-remove-item');
+  //     if (!$buttonRemoveItem) return;
 
-      const $item = $buttonRemoveItem.closest('.item');
-      const $sticker = $item.closest('.sticker');
-      const key = $sticker.id;
-      const itemKey = $item.dataset.key;
+  //     const $item = $buttonRemoveItem.closest('.item');
+  //     const $sticker = $item.closest('.sticker');
 
-      handler(key, itemKey);
-    });
-  }
+  //     handler($sticker.id, $item.dataset.key);
+  //   });
+  // }
 
   getStickerElement(key) {
     return document.querySelector(`#${key}`);

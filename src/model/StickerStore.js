@@ -4,7 +4,7 @@ export class StickerStore {
 
   constructor() {
     this.#stickers = new Object();
-    this.#totalCount = 0;
+    this.#totalCount = 1;
   }
 
   getPositionForCreateSticker() {
@@ -32,7 +32,7 @@ export class StickerStore {
     return this.#stickers[key];
   }
 
-  getNextKey() {
+  getNextCount() {
     return this.#totalCount++;
   }
 

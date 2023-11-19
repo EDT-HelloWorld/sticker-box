@@ -4,7 +4,6 @@ export class Sticker {
   #title;
   #key;
   #items;
-  #curIndex;
   #position;
   #element;
   #itemsElement;
@@ -14,7 +13,6 @@ export class Sticker {
     this.#title = title;
     this.#key = key;
     this.#position = position;
-    this.#curIndex = 0;
     this.#items = [];
     this.#backgroundColor = getRandomColor();
     this.#element = this.#createElement();
@@ -31,19 +29,25 @@ export class Sticker {
 
     const $stickerHeader = document.createElement('div');
     $stickerHeader.classList.add('sticker-header');
-    $stickerHeader.textContent = this.getTitle();
+
+    const $stickerTitle = document.createElement('div');
+    $stickerTitle.classList.add('sticker-title');
+    $stickerTitle.textContent = this.getTitle();
+    $stickerHeader.append($stickerTitle);
+
+    const $controlSticker = document.createElement('div');
+    $controlSticker.classList.add('control-sticker');
+    $stickerHeader.append($controlSticker);
 
     const $buttonItemAdd = document.createElement('button');
     $buttonItemAdd.classList.add('button-item-add');
     $buttonItemAdd.textContent = '항목 추가';
-    // $buttonItemAdd.onclick = () => this.addItem();
-    $stickerHeader.append($buttonItemAdd);
+    $controlSticker.append($buttonItemAdd);
 
     const $buttonRemoveSticker = document.createElement('button');
     $buttonRemoveSticker.classList.add('button-remove-sticker');
     $buttonRemoveSticker.textContent = '스티커 삭제';
-    // $buttonRemoveSticker.onclick = () => this.remove();
-    $stickerHeader.append($buttonRemoveSticker);
+    $controlSticker.append($buttonRemoveSticker);
 
     const $stickerItems = document.createElement('ul');
     $stickerItems.classList.add('items-container');
@@ -74,10 +78,6 @@ export class Sticker {
 
   getItems() {
     return this.#items;
-  }
-
-  getNextIndex() {
-    return this.#curIndex++;
   }
 
   setPosition(position) {

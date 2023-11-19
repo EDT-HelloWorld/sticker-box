@@ -46,19 +46,23 @@ export class Item {
     const $buttonRemoveItem = document.createElement('button');
     $buttonRemoveItem.classList.add('button-remove-item');
     $buttonRemoveItem.textContent = '삭제';
+    $buttonRemoveItem.addEventListener('mouseup', () => {
+      this.getSticker().removeItem(this);
+      this.removeElement();
+    });
     $item.append($buttonRemoveItem);
 
     return $item;
   }
 
   handleMouseDown(event) {
-    event.stopPropagation();
+    event.target.closest('.stickers').append(event.target.closest('.sticker'));
     if (event.target.classList.contains('button-remove-item')) return;
 
     this.#createPlaceHolderItemElement();
     this.#createCloneItemElement();
 
-    this.#renderPlaceHolderItemElement();
+    this.#$element.style.visibility = 'hidden';
 
     const shiftX = event.pageX - this.#$element.offsetLeft;
     const shiftY = event.pageY - this.#$element.offsetTop;
@@ -66,15 +70,16 @@ export class Item {
     this.#position.shiftX = shiftX;
     this.#position.shiftY = shiftY;
 
+    this.#switchPosition(this.#$element.offsetLeft, this.#$element.offsetTop);
+
+    this.#renderPlaceHolderItemElement();
+    this.#renderCloneItemElement();
+
     document.addEventListener('mousemove', this.handleMouseMove);
     document.addEventListener('mouseup', this.handleMouseUp);
   }
 
   handleMouseMove = (event) => {
-    this.#renderCloneItemElement();
-
-    this.#$element.style.visibility = 'hidden';
-
     this.#position.x = event.pageX - this.#position.shiftX;
     this.#position.y = event.pageY - this.#position.shiftY;
 
@@ -93,9 +98,6 @@ export class Item {
 
     if ($originSticker.id != $targetSticker.id) {
       // 다른 스티커로 이동했을 때
-      // $originSticker.updateSticker(this);
-      // this.#setSticker($targetSticker.getSticker());
-      // $targetSticker.updateSticker(this);
       let originSticker = this.findStickerByKey($originSticker.id);
       let targetSticker = this.findStickerByKey($targetSticker.id);
       this.#setSticker(targetSticker);
@@ -135,7 +137,7 @@ export class Item {
       this.#$placeHolderItem.style.position = 'static';
       this.#$element.style.display = 'none';
 
-      if (y - $item.offsetTop - $sticker.offsetTop < 45) {
+      if (y - $item.offsetTop - $sticker.offsetTop < 50) {
         $item.before(this.#$placeHolderItem);
         $item.before(this.#$element);
       } else {
@@ -143,11 +145,19 @@ export class Item {
         $item.after(this.#$element);
       }
     } else if ($itemsContainer != null) {
-      $itemsContainer.appendChild(this.#$placeHolderItem);
-      $itemsContainer.appendChild(this.#$element);
+      if (!this.#hasClassInChildren($itemsContainer, 'item')) {
+        $itemsContainer.appendChild(this.#$placeHolderItem);
+        $itemsContainer.appendChild(this.#$element);
+      }
     } else {
       this.#$element.before(this.#$placeHolderItem);
     }
+  }
+
+  #hasClassInChildren(parentElement, className) {
+    const matchingElement = parentElement.querySelector(`.${className}`);
+
+    return !!matchingElement;
   }
 
   #createPlaceHolderItemElement() {
