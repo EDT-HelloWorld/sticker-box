@@ -7,6 +7,23 @@ export class StickerStore {
     this.#totalCount = 0;
   }
 
+  getPositionForCreateSticker() {
+    const position = {
+      x: 0,
+      y: 0,
+    };
+
+    Object.entries(this.#stickers).forEach(([key, sticker]) => {
+      const { x, y } = sticker.getPosition();
+      if (position.x === x && position.y === y) {
+        position.x += 10;
+        position.y += 10;
+      }
+    });
+
+    return position;
+  }
+
   getStickers() {
     return this.#stickers;
   }

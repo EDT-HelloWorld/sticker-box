@@ -21,7 +21,7 @@ export class Controller {
   }
 
   handleCreateSticker(title) {
-    const position = { x: 0, y: 0 };
+    const position = this.#stickerStore.getPositionForCreateSticker();
     const key = `sticker-${this.#stickerStore.getNextKey()}`;
     const sticker = new Sticker(title, key, position);
 
