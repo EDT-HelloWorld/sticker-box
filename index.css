@@ -47,6 +47,15 @@
   align-items: center;
 }
 
+.item-title {
+  margin-left: 10px;
+}
+
+.button-remove-item {
+  width: 60px;
+  margin-right: 10px;
+}
+
 .item-place-holder {
   display: flex;
   position: absolute;
