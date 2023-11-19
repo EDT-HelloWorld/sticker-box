@@ -51,16 +51,17 @@ export class Item {
     return $item;
   }
 
-  handleMouseDown(e) {
-    e.stopPropagation();
+  handleMouseDown(event) {
+    event.stopPropagation();
+    if (event.target.classList.contains('button-remove-item')) return;
 
     this.#createPlaceHolderItemElement();
     this.#createCloneItemElement();
 
     this.#renderPlaceHolderItemElement();
 
-    const shiftX = e.pageX - this.#$element.offsetLeft;
-    const shiftY = e.pageY - this.#$element.offsetTop;
+    const shiftX = event.pageX - this.#$element.offsetLeft;
+    const shiftY = event.pageY - this.#$element.offsetTop;
 
     this.#position.shiftX = shiftX;
     this.#position.shiftY = shiftY;
@@ -69,16 +70,16 @@ export class Item {
     document.addEventListener('mouseup', this.handleMouseUp);
   }
 
-  handleMouseMove = (e) => {
+  handleMouseMove = (event) => {
     this.#renderCloneItemElement();
 
     this.#$element.style.visibility = 'hidden';
 
-    this.#position.x = e.pageX - this.#position.shiftX;
-    this.#position.y = e.pageY - this.#position.shiftY;
+    this.#position.x = event.pageX - this.#position.shiftX;
+    this.#position.y = event.pageY - this.#position.shiftY;
 
-    this.#switchPlaceHolderLocation(e.pageX, e.pageY);
-    this.#switchLocation(this.#position.x, this.#position.y);
+    this.#switchPlaceHolderPosition(event.clientX, event.clientY);
+    this.#switchPosition(this.#position.x, this.#position.y);
   };
 
   handleMouseUp = () => {
@@ -110,12 +111,12 @@ export class Item {
     return $item.closest('.sticker');
   }
 
-  #switchLocation(x, y) {
+  #switchPosition(x, y) {
     this.#$cloneItem.style.left = `${x}px`;
     this.#$cloneItem.style.top = `${y}px`;
   }
 
-  #switchPlaceHolderLocation(x, y) {
+  #switchPlaceHolderPosition(x, y) {
     let $item = null;
     let $itemsContainer = null;
     let elements = document.elementsFromPoint(x, y);
@@ -142,10 +143,8 @@ export class Item {
         $item.after(this.#$element);
       }
     } else if ($itemsContainer != null) {
-      if (!$itemsContainer.hasChildNodes()) {
-        $itemsContainer.appendChild(this.#$placeHolderItem);
-        $itemsContainer.appendChild(this.#$element);
-      }
+      $itemsContainer.appendChild(this.#$placeHolderItem);
+      $itemsContainer.appendChild(this.#$element);
     } else {
       this.#$element.before(this.#$placeHolderItem);
     }
