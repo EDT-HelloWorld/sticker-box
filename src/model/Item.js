@@ -1,4 +1,4 @@
-import { stickerStore } from '../Controller.js';
+import { stickerStore } from '../../index.js';
 
 export class Item {
   #title;

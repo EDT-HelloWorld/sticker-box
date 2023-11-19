@@ -1,4 +1,4 @@
-import { stickerStore, $canvasSticker } from '../Controller.js';
+import { stickerStore, $canvasSticker } from '../../index.js';
 import { getPrimaryKey } from '../utils/getPrimaryKey.js';
 import { getRandomColor } from '../utils/getRandomColor.js';
 import { Item } from './Item.js';

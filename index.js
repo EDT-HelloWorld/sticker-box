@@ -1,4 +1,6 @@
-import { Controller } from './src/Controller.js';
+import { StickerStore } from './src/StickerStore.js';
 
-const controller = new Controller();
-controller.init();
+export const $canvasSticker = document.querySelector('#sticker-canvas');
+
+export const stickerStore = new StickerStore();
+stickerStore.init();
