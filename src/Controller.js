@@ -1,6 +1,6 @@
 import { Sticker } from './model/Sticker.js';
 import { StickerStore } from './model/StickerStore.js';
-import { Item } from './model/item.js';
+import { Item } from './model/Item.js';
 import { View } from './view/View.js';
 
 export class Controller {
@@ -18,7 +18,6 @@ export class Controller {
     this.#view.bindCreateItem(this.handleCreateItem.bind(this));
     this.#view.bindRemoveSticker(this.handleRemoveSticker.bind(this));
     this.#view.bindRemoveItem(this.handleRemoveItem.bind(this));
-    this.#view.bindDragItem(this.handleDragItem.bind(this));
   }
 
   handleCreateSticker(title) {
@@ -47,7 +46,12 @@ export class Controller {
 
   handleCreateItem(key, title) {
     const sticker = this.#stickerStore.getStickers()[key];
-    const item = new Item(title, `item-${sticker.getNextIndex()}`);
+    const item = new Item(
+      sticker,
+      `item-${sticker.getNextIndex()}`,
+      title,
+      this.#stickerStore.findStickerByKey.bind(this.#stickerStore),
+    );
 
     sticker.addItem(item);
     this.#view.renderCreateItem(sticker, item);
@@ -69,37 +73,20 @@ export class Controller {
     this.#view.renderRemoveItem(item);
   }
 
-  handleMoveItemToOtherSticker(key, itemKey, targetKey) {
-    const sticker = this.#stickerStore.getStickers()[key];
-    const targetSticker = this.#stickerStore.getStickers()[targetKey];
-    const item = sticker.getItems().find((item) => item.getKey() === itemKey);
+  // handleMoveItemToOtherSticker(key, itemKey, targetKey) {
+  //   const sticker = this.#stickerStore.getStickers()[key];
+  //   const targetSticker = this.#stickerStore.getStickers()[targetKey];
+  //   const item = sticker.getItems().find((item) => item.getKey() === itemKey);
 
-    sticker.removeItem(item);
-    targetSticker.addItem(item);
-    this.#view.renderMoveItem(item, targetSticker);
-  }
+  //   sticker.removeItem(item);
+  //   targetSticker.addItem(item);
+  //   this.#view.renderMoveItem(item, targetSticker);
+  // }
 
-  handleDragItem(targetKey, itemKey, position) {
-    console.log(targetKey, itemKey, position);
-    const item = this.#stickerStore.getStickers()[targetKey];
-    // item.remove();
-    // this.#view.renderItemPosition(item);
-  }
-
-  // handleRenderItems(sticker) {
-  //   const items = sticker.getItems();
-  //   const $items = this.#view.getStickerItemsElement(sticker.getKey());
-  //   const itemsElement = $items.querySelectorAll('li');
-  //   items.forEach((item, index) => {
-  //     const itemElement = itemsElement[index];
-  //     if (!itemElement) {
-  //       this.#view.renderCreateItem(sticker);
-  //       return;
-  //     }
-
-  //     if (itemElement !== item) {
-  //       itemElement.insertAdjacentElement('beforebegin', item);
-  //     }
-  //   });
+  // handleDragItem(targetKey, itemKey, position) {
+  //   console.log(targetKey, itemKey, position);
+  //   const item = this.#stickerStore.getStickers()[targetKey];
+  //   // item.removeElement();
+  //   // this.#view.renderItemPosition(item);
   // }
 }

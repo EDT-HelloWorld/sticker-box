@@ -11,6 +11,10 @@ export class StickerStore {
     return this.#stickers;
   }
 
+  findStickerByKey(key) {
+    return this.#stickers[key];
+  }
+
   getNextKey() {
     return this.#totalCount++;
   }

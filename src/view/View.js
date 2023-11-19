@@ -4,9 +4,7 @@ export class View {
 
   constructor() {
     this.#$canvasSticker = document.querySelector('#sticker-canvas');
-    this.#$buttonCreateSticker = document.querySelector(
-      '#button-create-sticker'
-    );
+    this.#$buttonCreateSticker = document.querySelector('#button-create-sticker');
   }
 
   renderCreateSticker(sticker) {
@@ -61,9 +59,7 @@ export class View {
 
   bindRemoveSticker(handler) {
     this.#$canvasSticker.addEventListener('click', (event) => {
-      const $buttonRemoveSticker = event.target.closest(
-        '.button-remove-sticker'
-      );
+      const $buttonRemoveSticker = event.target.closest('.button-remove-sticker');
       if (!$buttonRemoveSticker) return;
 
       const $sticker = $buttonRemoveSticker.closest('.sticker');
@@ -86,7 +82,7 @@ export class View {
 
   renderCreateItem(sticker, item) {
     const $sticker = document.querySelector(`#${sticker.getKey()}`);
-    const $stickerItems = $sticker.querySelector('.sticker-items');
+    const $stickerItems = $sticker.querySelector('.items-container');
     const $item = item.getElement();
     $stickerItems.append($item);
   }
@@ -123,7 +119,7 @@ export class View {
   }
 
   getStickerItemsElement(key) {
-    return document.querySelector(`#${key} .sticker-items`);
+    return document.querySelector(`#${key} .items-container`);
   }
 
   removeSticker(sticker) {
@@ -131,65 +127,65 @@ export class View {
   }
 
   renderRemoveItem(item) {
-    item.remove();
+    item.removeElement();
   }
 
-  bindDragItem(handler) {
-    let isDraggingItem = false;
-    let parentStickerKey = null;
-    let $draggedItem = null;
-    let offset = {};
+  // bindDragItem(handler) {
+  //   let isDraggingItem = false;
+  //   let parentStickerKey = null;
+  //   let $draggedItem = null;
+  //   let offset = {};
 
-    const onMouseMove = (event) => {
-      event.stopPropagation();
-      if (!isDraggingItem || !$draggedItem) return;
+  //   const onMouseMove = (event) => {
+  //     event.stopPropagation();
+  //     if (!isDraggingItem || !$draggedItem) return;
 
-      const newPosition = {
-        x: event.clientX - offset.x,
-        y: event.clientY - offset.y,
-      };
+  //     const newPosition = {
+  //       x: event.clientX - offset.x,
+  //       y: event.clientY - offset.y,
+  //     };
 
-      $draggedItem.style.left = `${newPosition.x}px`;
-      $draggedItem.style.top = `${newPosition.y}px`;
-    };
+  //     $draggedItem.style.left = `${newPosition.x}px`;
+  //     $draggedItem.style.top = `${newPosition.y}px`;
+  //   };
 
-    const onMouseUp = () => {
-      if (isDraggingItem && $draggedItem) {
-        const newPosition = {
-          x: parseFloat($draggedItem.style.left),
-          y: parseFloat($draggedItem.style.top),
-        };
+  //   const onMouseUp = () => {
+  //     if (isDraggingItem && $draggedItem) {
+  //       const newPosition = {
+  //         x: parseFloat($draggedItem.style.left),
+  //         y: parseFloat($draggedItem.style.top),
+  //       };
 
-        handler(parentStickerKey, $draggedItem.dataset.key, newPosition);
-      }
+  //       handler(parentStickerKey, $draggedItem.dataset.key, newPosition);
+  //     }
 
-      isDraggingItem = false;
-      $draggedItem = null;
+  //     isDraggingItem = false;
+  //     $draggedItem = null;
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
+  //     document.removeEventListener('mousemove', onMouseMove);
+  //     document.removeEventListener('mouseup', onMouseUp);
+  //   };
 
-    document.addEventListener('mousedown', (event) => {
-      event.stopPropagation();
-      if (!event.target.classList.contains('item')) return;
+  //   document.addEventListener('mousedown', (event) => {
+  //     event.stopPropagation();
+  //     if (!event.target.classList.contains('item')) return;
 
-      isDraggingItem = true;
-      $draggedItem = event.target;
-      parentStickerKey = $draggedItem.closest('.sticker').id;
+  //     isDraggingItem = true;
+  //     $draggedItem = event.target;
+  //     parentStickerKey = $draggedItem.closest('.sticker').id;
 
-      // Calculate the offset of the mouse pointer relative to the item's position
-      const rect = $draggedItem.getBoundingClientRect();
-      offset = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-      };
+  //     // Calculate the offset of the mouse pointer relative to the item's position
+  //     const rect = $draggedItem.getBoundingClientRect();
+  //     offset = {
+  //       x: event.clientX - rect.left,
+  //       y: event.clientY - rect.top,
+  //     };
 
-      // Append the dragged item to the body so that it is not affected by the sticker's position
-      document.body.appendChild($draggedItem);
+  //     // Append the dragged item to the body so that it is not affected by the sticker's position
+  //     document.body.appendChild($draggedItem);
 
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-  }
+  //     document.addEventListener('mousemove', onMouseMove);
+  //     document.addEventListener('mouseup', onMouseUp);
+  //   });
+  // }
 }
