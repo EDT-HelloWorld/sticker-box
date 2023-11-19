@@ -22,12 +22,81 @@ export class Sticker {
     this.#itemsElement = this.#element.querySelector('.items-container');
   }
 
+  /**
+   * @description 스티커 엘리먼트를 반환해주는 메서드
+   */
+  getElement() {
+    return this.#element;
+  }
+
+  /**
+   * @description 스티커의 key를 반환해주는 메서드
+   */
+  getKey() {
+    return this.#key;
+  }
+
+  /**
+   * @description 스티커의 위치를 반환해주는 메서드
+   */
+  getPosition() {
+    return this.#position;
+  }
+
+  /**
+   * @description 항목을 추가해주는 메서드
+   * @param {Item} item
+   */
+  addItem(item) {
+    this.#items.push(item);
+  }
+
+  /**
+   * @description 항목을 삭제해주는 메서드
+   * @param {Item} item
+   */
+  removeItem(item) {
+    this.#items = this.#items.filter((element) => element !== item);
+  }
+
+  /**
+   * @description 스티커의 항목들을 반환해주는 메서드
+   */
+  getItemsElement() {
+    return this.#itemsElement;
+  }
+
+  /**
+   * @description 스티커의 제목을 반환해주는 메서드
+   */
+  #getTitle() {
+    return this.#title;
+  }
+
+  /**
+   * @description 스티커의 위치를 설정해주는 메서드
+   * @param {position} position
+   */
+  #setPosition(position) {
+    this.#position = position;
+  }
+
+  /**
+   * @description 스티커 엘리먼트를 삭제해주는 메서드
+   */
+  #removeElement() {
+    this.#element.remove();
+  }
+
+  /**
+   * @description 스티커 엘리먼트를 생성해주는 메서드
+   */
   #createElement() {
     const $sticker = document.createElement('div');
     $sticker.classList.add('sticker');
     $sticker.id = this.getKey();
-    $sticker.style.left = `${this.#position.x}px`;
-    $sticker.style.top = `${this.#position.y}px`;
+    $sticker.style.left = `${this.getPosition().x}px`;
+    $sticker.style.top = `${this.getPosition().y}px`;
     $sticker.style.backgroundColor = this.#backgroundColor;
     $sticker.addEventListener('mousedown', this.#handleMouseDown.bind(this));
 
@@ -36,7 +105,7 @@ export class Sticker {
 
     const $stickerTitle = document.createElement('div');
     $stickerTitle.classList.add('sticker-title');
-    $stickerTitle.textContent = this.getTitle();
+    $stickerTitle.textContent = this.#getTitle();
     $stickerHeader.append($stickerTitle);
 
     const $controlSticker = document.createElement('div');
@@ -62,12 +131,20 @@ export class Sticker {
     return $sticker;
   }
 
+  /**
+   * @description 스티커를 삭제하는 이벤트 핸들러
+   * @param {event} event
+   */
   #handleRemoveSticker(event) {
     if (!event.target.classList.contains('button-remove-sticker')) return;
     stickerStore.removeSticker(this);
-    this.remove();
+    this.#removeElement();
   }
 
+  /**
+   * @description 항목을 생성하는 이벤트 핸들러
+   * @param {event} event
+   */
   #handleCreateItem(event) {
     if (!event.target.classList.contains('button-item-add')) return;
     const title = `item-${getPrimaryKey()}`;
@@ -76,6 +153,10 @@ export class Sticker {
     this.getItemsElement().append(item.getElement());
   }
 
+  /**
+   * @description 스티커를 드래그하는 이벤트 핸들러
+   * @param {event} event
+   */
   #handleMouseDown(event) {
     if (event.target.classList.contains('button-remove-sticker')) return;
     if (event.target.classList.contains('button-item-add')) return;
@@ -94,6 +175,7 @@ export class Sticker {
       y: event.clientY - this.getElement().offsetTop,
     };
 
+    // 마우스 이동 이벤트 핸들러
     const handleMouseMove = (event) => {
       if (!isDragging) return;
 
@@ -102,12 +184,13 @@ export class Sticker {
         y: event.clientY - startPosition.y,
       };
 
-      this.setPosition(newPosition);
+      this.#setPosition(newPosition);
 
       this.getElement().style.left = `${this.getPosition().x}px`;
       this.getElement().style.top = `${this.getPosition().y}px`;
     };
 
+    // 마우스 업 이벤트 핸들러
     const handleMouseUp = () => {
       isDragging = false;
       document.removeEventListener('mousemove', handleMouseMove);
@@ -116,45 +199,5 @@ export class Sticker {
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }
-
-  getElement() {
-    return this.#element;
-  }
-
-  getItemsElement() {
-    return this.#itemsElement;
-  }
-
-  getTitle() {
-    return this.#title;
-  }
-
-  getKey() {
-    return this.#key;
-  }
-
-  getPosition() {
-    return this.#position;
-  }
-
-  getItems() {
-    return this.#items;
-  }
-
-  setPosition(position) {
-    this.#position = position;
-  }
-
-  addItem(item) {
-    this.#items.push(item);
-  }
-
-  remove() {
-    this.#element.remove();
-  }
-
-  removeItem(item) {
-    this.#items = this.#items.filter((element) => element !== item);
   }
 }
