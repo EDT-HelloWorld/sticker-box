@@ -1,3 +1,5 @@
+import { stickerStore } from '../Controller.js';
+
 export class Item {
   #title;
   #key;
@@ -7,7 +9,7 @@ export class Item {
   #$cloneItem;
   #position;
 
-  constructor(sticker, key, title, findStickerByKey) {
+  constructor(sticker, key, title) {
     this.#sticker = sticker;
     this.#title = title;
     this.#key = key;
@@ -21,8 +23,6 @@ export class Item {
       shiftY: null,
     };
 
-    // findStickerByKey은 테스트용으로 차후 종속성 없애는 로직으로 구현
-    this.findStickerByKey = findStickerByKey;
     this.#init();
   }
 
@@ -97,9 +97,8 @@ export class Item {
     let $targetSticker = this.#getStickerElementByItemElement(this.#$placeHolderItem);
 
     if ($originSticker.id != $targetSticker.id) {
-      // 다른 스티커로 이동했을 때
-      let originSticker = this.findStickerByKey($originSticker.id);
-      let targetSticker = this.findStickerByKey($targetSticker.id);
+      let originSticker = stickerStore.findStickerByKey($originSticker.id);
+      let targetSticker = stickerStore.findStickerByKey($targetSticker.id);
       this.#setSticker(targetSticker);
       originSticker.removeItem(this);
       targetSticker.addItem(this);
