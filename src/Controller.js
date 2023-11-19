@@ -5,6 +5,8 @@ import { View } from './view/View.js';
 import { getPrimaryKey } from './utils/getPrimaryKey.js';
 
 export const stickerStore = new StickerStore();
+export const $canvasSticker = document.querySelector('#sticker-canvas');
+export const $buttonCreateSticker = document.querySelector('#button-create-sticker');
 
 export class Controller {
   #view;
@@ -15,9 +17,6 @@ export class Controller {
 
   init() {
     this.#view.bindCreateStickerButton(this.handleCreateSticker.bind(this));
-    this.#view.bindMoveSticker(this.handleMoveSticker.bind(this));
-    this.#view.bindCreateItem(this.handleCreateItem.bind(this));
-    this.#view.bindRemoveSticker(this.handleRemoveSticker.bind(this));
   }
 
   handleCreateSticker() {
@@ -29,28 +28,6 @@ export class Controller {
     stickerStore.addSticker(sticker);
 
     this.renderStickers();
-  }
-
-  handleMoveSticker(key, position) {
-    const sticker = stickerStore.getStickers()[key];
-
-    sticker.setPosition(position);
-    this.#view.renderStickerPosition(sticker);
-  }
-
-  handleRemoveSticker(key) {
-    const sticker = stickerStore.getStickers()[key];
-
-    stickerStore.removeSticker(sticker);
-    this.#view.removeSticker(sticker);
-  }
-
-  handleCreateItem(key, title) {
-    const sticker = stickerStore.getStickers()[key];
-    const item = new Item(sticker, `item-${getPrimaryKey()}`, title);
-
-    sticker.addItem(item);
-    this.#view.renderCreateItem(sticker, item);
   }
 
   renderStickers() {

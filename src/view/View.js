@@ -1,75 +1,14 @@
+import { $canvasSticker, $buttonCreateSticker } from '../Controller.js';
+
 export class View {
-  #$canvasSticker;
-  #$buttonCreateSticker;
-
-  constructor() {
-    this.#$canvasSticker = document.querySelector('#sticker-canvas');
-    this.#$buttonCreateSticker = document.querySelector('#button-create-sticker');
-  }
-
   renderCreateSticker(sticker) {
     const $sticker = sticker.getElement();
-    this.#$canvasSticker.append($sticker);
+    $canvasSticker.append($sticker);
   }
 
   bindCreateStickerButton(handler) {
-    this.#$buttonCreateSticker.addEventListener('click', () => {
+    $buttonCreateSticker.addEventListener('click', () => {
       handler();
-    });
-  }
-
-  bindMoveSticker(handler) {
-    let isDragging = false;
-    let $currentSticker = null;
-    let startPosition = {};
-
-    const onMouseMove = (event) => {
-      if (!isDragging) return;
-
-      const newPosition = {
-        x: event.clientX - startPosition.x,
-        y: event.clientY - startPosition.y,
-      };
-
-      handler($currentSticker.id, newPosition);
-    };
-
-    const onMouseUp = () => {
-      isDragging = false;
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousedown', (event) => {
-      if (event.target.classList.contains('button-remove-sticker')) return;
-      if (event.target.classList.contains('button-item-add')) return;
-      if (event.target.classList.contains('item')) return;
-      if (event.target.classList.contains('button-remove-item')) return;
-      $currentSticker = event.target.closest('.sticker');
-      if (!$currentSticker) return;
-
-      this.#$canvasSticker.appendChild($currentSticker);
-
-      isDragging = true;
-      startPosition = {
-        x: event.clientX - $currentSticker.offsetLeft,
-        y: event.clientY - $currentSticker.offsetTop,
-      };
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-  }
-
-  bindRemoveSticker(handler) {
-    this.#$canvasSticker.addEventListener('click', (event) => {
-      const $buttonRemoveSticker = event.target.closest('.button-remove-sticker');
-      if (!$buttonRemoveSticker) return;
-
-      const $sticker = $buttonRemoveSticker.closest('.sticker');
-      const key = $sticker.id;
-
-      handler(key);
     });
   }
 
@@ -82,41 +21,5 @@ export class View {
     } else {
       this.renderCreateSticker(sticker, sticker.getPosition());
     }
-  }
-
-  renderCreateItem(sticker, item) {
-    const $sticker = document.querySelector(`#${sticker.getKey()}`);
-    const $stickerItems = $sticker.querySelector('.items-container');
-    const $item = item.getElement();
-    $stickerItems.append($item);
-  }
-
-  bindCreateItem(handler) {
-    this.#$canvasSticker.addEventListener('click', (event) => {
-      const $itemAddButton = event.target.closest('.button-item-add');
-      if (!$itemAddButton) return;
-
-      const $sticker = $itemAddButton.closest('.sticker');
-      const key = $sticker.id;
-      const title = 'test';
-
-      handler(key, title);
-    });
-  }
-
-  getStickerElement(key) {
-    return document.querySelector(`#${key}`);
-  }
-
-  getStickerItemsElement(key) {
-    return document.querySelector(`#${key} .items-container`);
-  }
-
-  removeSticker(sticker) {
-    sticker.remove();
-  }
-
-  renderRemoveItem(item) {
-    item.removeElement();
   }
 }
