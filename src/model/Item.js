@@ -25,7 +25,11 @@ export class Item {
   }
 
   serialize() {
-    return { key: this.key, title: this.#title };
+    return { key: this.#key, title: this.#title };
+  }
+
+  static deserialize(data) {
+    return new Item(data.key, data.title);
   }
 
   /**
