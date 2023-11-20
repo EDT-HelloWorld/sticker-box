@@ -1,4 +1,4 @@
-import { createDeleteItemEvent } from '../CustomEvent.js';
+import { createDeleteItemEvent, createMoveItemEvent } from '../CustomEvent.js';
 
 export class Item {
   #title;
@@ -45,7 +45,7 @@ export class Item {
   /**
    * @description 항목의 key를 반환해주는 메서드
    */
-  #getKey() {
+  getKey() {
     return this.#key;
   }
 
@@ -117,7 +117,7 @@ export class Item {
   #createElement() {
     const $item = document.createElement('li');
     $item.classList.add('item');
-    $item.dataset.key = this.#getKey();
+    $item.dataset.key = this.getKey();
     $item.addEventListener('mousedown', this.#handleMouseDown.bind(this));
 
     // 타이틀 영역
@@ -190,10 +190,13 @@ export class Item {
       this.getElement().style.display = 'flex';
 
       if (
-        this.#$element.parentElement !==
-        this.#getPlaceHolderElement.parentElement
+        this.#getCloneElement().parentElement !==
+        this.#getPlaceHolderElement().parentElement
       ) {
-        this.#$element.dispatchEvent(createDeleteItemEvent(this));
+        this.#getCloneElement().dispatchEvent(createDeleteItemEvent(this));
+        this.#getPlaceHolderElement().dispatchEvent(createMoveItemEvent(this));
+      } else {
+        this.#getCloneElement().dispatchEvent(createMoveItemEvent(this));
       }
 
       if (this.#getPlaceHolderElement() != null)
