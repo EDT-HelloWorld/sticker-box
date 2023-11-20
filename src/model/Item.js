@@ -1,4 +1,5 @@
 import { stickerStore } from '../../index.js';
+import { createDeleteItemEvent } from '../CustomEvent.js';
 import { Sticker } from './Sticker.js';
 
 export class Item {
@@ -125,6 +126,7 @@ export class Item {
    * @description 항목의 엘리먼트를 삭제해주는 메서드
    */
   #removeElement() {
+    this.getElement().dispatchEvent(createDeleteItemEvent(this));
     this.getElement().remove();
   }
 
@@ -148,7 +150,6 @@ export class Item {
     $buttonRemoveItem.classList.add('button-remove-item');
     $buttonRemoveItem.textContent = '삭제';
     $buttonRemoveItem.addEventListener('mouseup', () => {
-      this.#getSticker().removeItem(this);
       this.#removeElement();
     });
     $item.append($buttonRemoveItem);

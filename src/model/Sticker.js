@@ -1,4 +1,5 @@
 import { stickerStore, $canvasSticker } from '../../index.js';
+import { EVENT_NAME } from '../CustomEvent.js';
 import { getPrimaryKey } from '../utils/getPrimaryKey.js';
 import { getRandomColor } from '../utils/getRandomColor.js';
 import { Item } from './Item.js';
@@ -144,6 +145,12 @@ export class Sticker {
     $stickerItems.classList.add('items-container');
 
     $sticker.append($stickerHeader, $stickerItems);
+
+    $sticker.addEventListener(EVENT_NAME.deleteItem, (event) => {
+      console.log(event);
+      this.removeItem(event.detail);
+    });
+
     return $sticker;
   }
 
