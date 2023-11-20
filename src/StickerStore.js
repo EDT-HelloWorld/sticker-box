@@ -6,7 +6,6 @@ import { EVENT_NAME } from './CustomEvent.js';
 
 export class StickerStore {
   #stickers;
-  #priorityElement;
   #totalCount;
   #$buttonCreateSticker;
   #saveStickers;
@@ -16,7 +15,6 @@ export class StickerStore {
    */
   init() {
     this.#stickers = new Object();
-    this.#priorityElement = [];
     this.#totalCount = 1;
 
     this.#saveStickers = _.debounce(() => {
@@ -189,10 +187,9 @@ export class StickerStore {
 
     this.#setTotalCount(getLocalStorage('totalCount'));
 
-    const loadedData = datas.map((data) => {
+    datas.forEach((data) => {
       const sticker = Sticker.deserialize(data);
       this.#addSticker(sticker);
-      return sticker.getElement();
     });
 
     priorityElement.forEach((id) => {
