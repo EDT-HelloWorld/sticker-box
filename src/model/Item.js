@@ -27,6 +27,10 @@ export class Item {
     this.#init();
   }
 
+  serialize() {
+    return { key: this.key, title: this.#title };
+  }
+
   /**
    * @description 항목의 엘리먼트를 반환해주는 메서드
    */

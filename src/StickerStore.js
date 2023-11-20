@@ -14,8 +14,13 @@ export class StickerStore {
     this.#stickers = new Object();
     this.#totalCount = 1;
 
-    this.#$buttonCreateSticker = document.querySelector('#button-create-sticker');
-    this.#$buttonCreateSticker.addEventListener('click', this.#handleCreateSticker.bind(this));
+    this.#$buttonCreateSticker = document.querySelector(
+      '#button-create-sticker'
+    );
+    this.#$buttonCreateSticker.addEventListener(
+      'click',
+      this.#handleCreateSticker.bind(this)
+    );
 
     this.#renderStickers();
   }
@@ -73,9 +78,9 @@ export class StickerStore {
    * @description 스티커 생성 버튼 클릭 이벤트 핸들러
    */
   #handleCreateSticker() {
-    const position = this.#getPositionForCreateSticker();
     const key = `sticker-${getPrimaryKey()}`;
     const title = `Sticker ${this.#getNextCount()}`;
+    const position = this.#getPositionForCreateSticker();
     const sticker = new Sticker(title, key, position);
 
     this.#addSticker(sticker);

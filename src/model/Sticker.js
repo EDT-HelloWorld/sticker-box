@@ -22,6 +22,19 @@ export class Sticker {
     this.#itemsElement = this.#element.querySelector('.items-container');
   }
 
+  serialize() {
+    return {
+      key: this.#key,
+      title: this.#title,
+      backgroundColor: this.#backgroundColor,
+      position: {
+        x: this.#position.x,
+        y: this.#position.y,
+      },
+      items: this.#items.map((item) => item.serialize()),
+    };
+  }
+
   /**
    * @description 스티커 엘리먼트를 반환해주는 메서드
    */
@@ -121,7 +134,10 @@ export class Sticker {
     const $buttonRemoveSticker = document.createElement('button');
     $buttonRemoveSticker.classList.add('button-remove-sticker');
     $buttonRemoveSticker.textContent = '스티커 삭제';
-    $buttonRemoveSticker.addEventListener('click', this.#handleRemoveSticker.bind(this));
+    $buttonRemoveSticker.addEventListener(
+      'click',
+      this.#handleRemoveSticker.bind(this)
+    );
     $controlSticker.append($buttonRemoveSticker);
 
     const $stickerItems = document.createElement('ul');
