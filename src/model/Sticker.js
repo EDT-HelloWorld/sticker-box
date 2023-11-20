@@ -16,12 +16,16 @@ export class Sticker {
   #itemsElement;
   #backgroundColor;
 
-  constructor(title, key, position) {
+  constructor(title, key, position, backgroundColor) {
     this.#title = title;
     this.#key = key;
     this.#position = position;
+    this.#backgroundColor = backgroundColor ?? getRandomColor();
     this.#items = [];
-    this.#backgroundColor = getRandomColor();
+    this.#init();
+  }
+
+  #init() {
     this.#element = this.#createElement();
     this.#itemsElement = this.#element.querySelector('.items-container');
   }
@@ -37,6 +41,30 @@ export class Sticker {
       },
       items: this.#items.map((item) => item.serialize()),
     };
+  }
+
+  static deserialize(data) {
+    const sticker = new Sticker(
+      data.title,
+      data.key,
+      data.position,
+      data.backgroundColor,
+      data.items
+    );
+
+    sticker.#setItems(
+      data.items.map((item) => {
+        return Item.deserialize(item);
+      })
+    );
+
+    sticker.#backgroundColor = data.backgroundColor;
+    sticker.#element = sticker.#createElement();
+    sticker.#itemsElement = sticker.#element.querySelector('.items-container');
+    sticker.#items.forEach((item) => {
+      sticker.#itemsElement.append(item.getElement());
+    });
+    return sticker;
   }
 
   /**
@@ -66,6 +94,7 @@ export class Sticker {
    */
   addItem(item) {
     this.#items.push(item);
+    this.getElement().dispatchEvent(createStickerChangeEvent(this));
   }
 
   /**
@@ -74,6 +103,7 @@ export class Sticker {
    */
   removeItem(item) {
     this.#items = this.#items.filter((element) => element !== item);
+    this.getElement().dispatchEvent(createStickerChangeEvent(this));
   }
 
   /**
@@ -228,6 +258,8 @@ export class Sticker {
     if (event.target.classList.contains('item-title')) return;
     if (event.target.classList.contains('item')) return;
     if (event.target.classList.contains('button-remove-item')) return;
+
+    this.getElement().dispatchEvent(createStickerChangeEvent(this));
 
     let isDragging = false;
     let startPosition = {};
