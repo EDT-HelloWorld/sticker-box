@@ -85,18 +85,34 @@ export class Item {
     this.#position = position;
   }
 
+  /**
+   * @description 항목의 cloneItem 엘리먼트를 반환해주는 메서드
+   * @returns cloneItem
+   */
   #getCloneElement() {
     return this.#$cloneItem;
   }
 
+  /**
+   * @description 항목의 cloneItem 엘리먼트를 설정해주는 메서드
+   * @param {element} $cloneItem
+   */
   #setCloneElement($cloneItem) {
     this.#$cloneItem = $cloneItem;
   }
 
+  /**
+   * @description 항목의 placeHolderItem 엘리먼트를 반환해주는 메서드
+   * @returns $placeHolderItem
+   */
   #getPlaceHolderElement() {
     return this.#$placeHolderItem;
   }
 
+  /**
+   * @description 항목의 placeHolderItem 엘리먼트를 설정해주는 메서드
+   * @param {element} $placeHolderItem
+   */
   #setPlaceHolderElement($placeHolderItem) {
     this.#$placeHolderItem = $placeHolderItem;
   }
@@ -160,7 +176,10 @@ export class Item {
       shiftY,
     });
 
-    this.#switchPosition(this.getElement().offsetLeft, this.getElement().offsetTop);
+    this.#switchPosition(
+      this.getElement().offsetLeft,
+      this.getElement().offsetTop
+    );
 
     this.#renderPlaceHolderItemElement();
     this.#renderCloneItemElement();
@@ -184,8 +203,12 @@ export class Item {
 
       this.getElement().style.display = 'flex';
 
-      let $originSticker = this.#getStickerElementByItemElement(this.#getCloneElement());
-      let $targetSticker = this.#getStickerElementByItemElement(this.#getPlaceHolderElement());
+      let $originSticker = this.#getStickerElementByItemElement(
+        this.#getCloneElement()
+      );
+      let $targetSticker = this.#getStickerElementByItemElement(
+        this.#getPlaceHolderElement()
+      );
 
       if ($originSticker.id != $targetSticker.id) {
         let originSticker = stickerStore.findStickerByKey($originSticker.id);
@@ -195,7 +218,8 @@ export class Item {
         targetSticker.addItem(this);
       }
 
-      if (this.#getPlaceHolderElement() != null) this.#removePlaceHolderItemElement();
+      if (this.#getPlaceHolderElement() != null)
+        this.#removePlaceHolderItemElement();
       if (this.#getCloneElement() != null) this.#removeCloneItemElement();
     };
 
