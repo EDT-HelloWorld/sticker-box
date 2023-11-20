@@ -25,6 +25,7 @@ export class StickerStore {
         stickers.push(sticker.serialize());
       });
       this.savePrimerity();
+      this.saveTotalCount();
       setLocalStorage('stickers', stickers);
     }, 200);
 

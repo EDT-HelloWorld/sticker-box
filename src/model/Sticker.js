@@ -6,6 +6,7 @@ import {
 import { getPrimaryKey } from '../utils/getPrimaryKey.js';
 import { getRandomColor } from '../utils/getRandomColor.js';
 import { Item } from './Item.js';
+import { $canvasSticker } from '../../index.js';
 
 export class Sticker {
   #title;
@@ -259,7 +260,7 @@ export class Sticker {
     if (event.target.classList.contains('item')) return;
     if (event.target.classList.contains('button-remove-item')) return;
 
-    this.getElement().dispatchEvent(createStickerChangeEvent(this));
+    $canvasSticker.appendChild(this.getElement());
 
     let isDragging = false;
     let startPosition = {};
@@ -289,6 +290,7 @@ export class Sticker {
     // 마우스 업 이벤트 핸들러
     const handleMouseUp = () => {
       isDragging = false;
+      this.getElement().dispatchEvent(createStickerChangeEvent(this));
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
