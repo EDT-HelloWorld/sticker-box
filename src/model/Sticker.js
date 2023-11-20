@@ -147,7 +147,6 @@ export class Sticker {
     $sticker.append($stickerHeader, $stickerItems);
 
     $sticker.addEventListener(EVENT_NAME.deleteItem, (event) => {
-      console.log(event);
       this.removeItem(event.detail);
     });
 

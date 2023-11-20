@@ -1,18 +1,14 @@
-import { stickerStore } from '../../index.js';
 import { createDeleteItemEvent } from '../CustomEvent.js';
-import { Sticker } from './Sticker.js';
 
 export class Item {
   #title;
   #key;
-  #sticker;
   #$element;
   #$placeHolderItem;
   #$cloneItem;
   #position;
 
-  constructor(sticker, key, title) {
-    this.#sticker = sticker;
+  constructor(key, title) {
     this.#title = title;
     this.#key = key;
     this.#$element = null;
@@ -44,21 +40,6 @@ export class Item {
    */
   #init() {
     this.#$element = this.#createElement();
-  }
-
-  /**
-   * @description 항목이 어떤 스티커에 추가되어 있는지 반환해주는 메서드
-   */
-  #getSticker() {
-    return this.#sticker;
-  }
-
-  /**
-   * @description 항목이 속한 스티커를 설정해주는 메서드
-   * @param {Sticker} sticker
-   */
-  #setSticker(sticker) {
-    this.#sticker = sticker;
   }
 
   /**
@@ -208,19 +189,11 @@ export class Item {
 
       this.getElement().style.display = 'flex';
 
-      let $originSticker = this.#getStickerElementByItemElement(
-        this.#getCloneElement()
-      );
-      let $targetSticker = this.#getStickerElementByItemElement(
-        this.#getPlaceHolderElement()
-      );
-
-      if ($originSticker.id != $targetSticker.id) {
-        let originSticker = stickerStore.findStickerByKey($originSticker.id);
-        let targetSticker = stickerStore.findStickerByKey($targetSticker.id);
-        this.#setSticker(targetSticker);
-        originSticker.removeItem(this);
-        targetSticker.addItem(this);
+      if (
+        this.#$element.parentElement !==
+        this.#getPlaceHolderElement.parentElement
+      ) {
+        this.#$element.dispatchEvent(createDeleteItemEvent(this));
       }
 
       if (this.#getPlaceHolderElement() != null)
@@ -338,7 +311,7 @@ export class Item {
    */
   #renderCloneItemElement() {
     if (this.#$cloneItem == null) return;
-    const $items = this.#getSticker().getItemsElement();
+    const $items = this.getElement().parentElement.closest('.items-container');
     $items.appendChild(this.#$cloneItem);
   }
 
