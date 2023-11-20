@@ -1,11 +1,22 @@
 export const EVENT_NAME = {
   stickerChange: 'stickerChange',
+  deleteSticker: 'deleteSticker',
   deleteItem: 'deleteStickerItem',
   moveItem: 'moveStikerItem',
 };
 
-export function createStickerChangeEvent() {
-  return new CustomEvent(EVENT_NAME.stickerChange, { bubbles: true });
+export function createStickerChangeEvent(sticker) {
+  return new CustomEvent(EVENT_NAME.stickerChange, {
+    bubbles: true,
+    detail: sticker,
+  });
+}
+
+export function createDeleteStickerEvent(sticker) {
+  return new CustomEvent(EVENT_NAME.deleteSticker, {
+    bubbles: true,
+    detail: sticker,
+  });
 }
 
 export function createDeleteItemEvent(item) {

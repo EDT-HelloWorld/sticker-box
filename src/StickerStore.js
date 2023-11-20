@@ -1,6 +1,7 @@
 import { getPrimaryKey } from './utils/getPrimaryKey.js';
 import { Sticker } from './model/Sticker.js';
 import { $canvasSticker } from '../index.js';
+import { EVENT_NAME } from './CustomEvent.js';
 
 export class StickerStore {
   #stickers;
@@ -22,7 +23,19 @@ export class StickerStore {
       this.#handleCreateSticker.bind(this)
     );
 
+    $canvasSticker.addEventListener(EVENT_NAME.stickerChange, (event) => {
+      this.handleStickerChange(event.detail);
+    });
+
+    $canvasSticker.addEventListener(EVENT_NAME.deleteSticker, (event) => {
+      this.removeSticker(event.detail);
+    });
+
     this.#renderStickers();
+  }
+
+  handleStickerChange(sticker) {
+    $canvasSticker.append(sticker.getElement());
   }
 
   /**

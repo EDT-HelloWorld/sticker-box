@@ -1,5 +1,8 @@
-import { stickerStore, $canvasSticker } from '../../index.js';
-import { EVENT_NAME } from '../CustomEvent.js';
+import {
+  EVENT_NAME,
+  createDeleteStickerEvent,
+  createStickerChangeEvent,
+} from '../CustomEvent.js';
 import { getPrimaryKey } from '../utils/getPrimaryKey.js';
 import { getRandomColor } from '../utils/getRandomColor.js';
 import { Item } from './Item.js';
@@ -81,6 +84,22 @@ export class Sticker {
   }
 
   /**
+   * @description 스티커의 항목들을 반환해주는 메서드
+   * @returns {Item[]}
+   */
+  #getItems() {
+    return this.#items;
+  }
+
+  /**
+   * @description 스티커의 항목들을 설정해주는 메서드
+   * @param {Item[]} items
+   */
+  #setItems(items) {
+    this.#items = items;
+  }
+
+  /**
    * @description 스티커의 제목을 반환해주는 메서드
    */
   #getTitle() {
@@ -150,7 +169,31 @@ export class Sticker {
       this.removeItem(event.detail);
     });
 
+    $sticker.addEventListener(EVENT_NAME.moveItem, (event) => {
+      this.#handleMoveItem(event.detail);
+    });
+
     return $sticker;
+  }
+
+  #handleMoveItem(item) {
+    // 새로운 항목 추가
+    if (!this.#getItems().some((x) => x.getKey() === item.getKey())) {
+      this.addItem(item);
+    }
+
+    const newItems = [];
+    for (const itemEl of this.getElement().querySelectorAll(
+      '.item:not(.item-place-holder)'
+    )) {
+      newItems.push(
+        this.#getItems().find((x) => x.getKey() === itemEl.dataset.key)
+      );
+    }
+
+    this.#setItems(newItems);
+
+    this.getElement().dispatchEvent(createStickerChangeEvent(this));
   }
 
   /**
@@ -159,7 +202,7 @@ export class Sticker {
    */
   #handleRemoveSticker(event) {
     if (!event.target.classList.contains('button-remove-sticker')) return;
-    stickerStore.removeSticker(this);
+    this.getElement().dispatchEvent(createDeleteStickerEvent(this));
     this.#removeElement();
   }
 
@@ -170,7 +213,7 @@ export class Sticker {
   #handleCreateItem(event) {
     if (!event.target.classList.contains('button-item-add')) return;
     const title = `item-${getPrimaryKey()}`;
-    const item = new Item(this, `item-${getPrimaryKey()}`, title);
+    const item = new Item(`item-${getPrimaryKey()}`, title);
     this.addItem(item);
     this.getItemsElement().append(item.getElement());
   }
@@ -189,7 +232,6 @@ export class Sticker {
     let isDragging = false;
     let startPosition = {};
 
-    $canvasSticker.appendChild(this.getElement());
     isDragging = true;
 
     startPosition = {
